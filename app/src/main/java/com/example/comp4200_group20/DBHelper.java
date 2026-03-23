@@ -44,16 +44,17 @@ public class DBHelper extends SQLiteOpenHelper {
         return sqLiteDatabase.rawQuery("SELECT * FROM recipe WHERE title=?", new String[]{title});
     }
 
-    /*
-    public Cursor deleteData(String inputTitle){
+    public boolean deleteData(String inputTitle) {
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
-        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM course WHERE title=?", new String[]{inputTitle});
-        if(cursor.getCount()>0){
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM recipe WHERE title=?", new String[]{inputTitle});
+        if (cursor.getCount() > 0) {
             sqLiteDatabase.delete("recipe", "title = ?", new String[]{inputTitle});
+            cursor.close();
+            return true;
         }
-        return cursor;
+        cursor.close();
+        return false;
     }
-    */
 
     public long editData(String oldTitle, String titleInput, String descriptionInput, String ingredientsInput, String instructionsInput){
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();

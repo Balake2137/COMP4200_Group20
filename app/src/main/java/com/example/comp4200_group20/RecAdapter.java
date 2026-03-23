@@ -1,16 +1,16 @@
 package com.example.comp4200_group20;
 
-import static androidx.core.app.ActivityCompat.startActivityForResult;
-
-import static java.security.AccessController.getContext;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,7 +20,13 @@ import java.util.ArrayList;
 public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
     ArrayList<DataSet> dataList;
     Context context;
-    public RecAdapter(ArrayList<DataSet> data, Context context){this.dataList = data; this.context = context;}
+    DBHelper dbHelper;
+    private int expandedPosition = -1;
+    public RecAdapter(ArrayList<DataSet> data, Context context){
+        this.dataList = data;
+        this.context = context;
+        this.dbHelper = new DBHelper(context, "test_database", null, 1);
+    }
 
     @NonNull
     @Override
@@ -34,12 +40,44 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
         DataSet data = dataList.get(position);
         holder.titleText.setText(data.getTitle());
         holder.descText.setText(data.getDescription());
+
+        boolean isExpanded = (position == expandedPosition);
+        holder.expandedSection.setVisibility(isExpanded ? View.VISIBLE : View.GONE);
+
+        if (isExpanded) {
+            Cursor cursor = dbHelper.getDataFromTitle(data.getTitle());
+            if (cursor != null && cursor.moveToFirst()) {
+                String ingredients = cursor.getString(cursor.getColumnIndexOrThrow("ingredients"));
+                String instructions = cursor.getString(cursor.getColumnIndexOrThrow("instructions"));
+                holder.ingredientsText.setText(ingredients != null ? ingredients : "No ingredients listed.");
+                holder.instructionsText.setText(instructions != null ? instructions : "No instructions listed.");
+                cursor.close();
+            }
+        }
+
+        // Regular click: toggle expand/collapse
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                int currentPosition = holder.getAbsoluteAdapterPosition();
 
+                if (expandedPosition == currentPosition) {
+                    // Collapse the currently expanded card
+                    expandedPosition = -1;
+                    notifyItemChanged(currentPosition);
+                } else {
+                    // Collapse the previously expanded card, expand the new one
+                    int previousExpanded = expandedPosition;
+                    expandedPosition = currentPosition;
+                    if (previousExpanded != -1) {
+                        notifyItemChanged(previousExpanded);
+                    }
+                    notifyItemChanged(currentPosition);
+                }
             }
         });
+
+        // Long click: navigate to edit screen
         holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -47,6 +85,29 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
                 i.putExtra("title", data.getTitle());
                 context.startActivity(i);
                 return false;
+            }
+        });
+
+        // Delete button click
+        holder.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int currentPosition = holder.getAbsoluteAdapterPosition();
+                boolean deleted = dbHelper.deleteData(data.getTitle());
+                if (deleted) {
+                    // Reset expanded state if the deleted card was expanded
+                    if (expandedPosition == currentPosition) {
+                        expandedPosition = -1;
+                    } else if (expandedPosition > currentPosition) {
+                        // Shift expanded index down since an item above it was removed
+                        expandedPosition--;
+                    }
+                    dataList.remove(currentPosition);
+                    notifyItemRemoved(currentPosition);
+                    notifyItemRangeChanged(currentPosition, dataList.size());
+                } else {
+                    Toast.makeText(context, "Failed to delete recipe.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -59,12 +120,20 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
     public class MyViewHolder extends RecyclerView.ViewHolder{
         TextView titleText;
         TextView descText;
+        TextView ingredientsText;
+        TextView instructionsText;
         CardView cardView;
+        View expandedSection;
+        Button deleteButton;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             titleText = itemView.findViewById(R.id.titleText);
             descText = itemView.findViewById(R.id.descText);
             cardView = itemView.findViewById(R.id.cardView);
+            expandedSection = itemView.findViewById(R.id.expandedSection);
+            ingredientsText = itemView.findViewById(R.id.ingredientsText);
+            instructionsText = itemView.findViewById(R.id.instructionsText);
+            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
     }
 }
