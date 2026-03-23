@@ -34,6 +34,12 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
         DataSet data = dataList.get(position);
         holder.titleText.setText(data.getTitle());
         holder.descText.setText(data.getDescription());
+        holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
         holder.cardView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
