@@ -85,15 +85,32 @@
                     android:textSize="14sp"
                     android:paddingBottom="12dp"/>
 
-                <Button
-                    android:id="@+id/deleteButton"
-                    android:layout_width="wrap_content"
+                <!-- Button row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Delete Recipe"
-                    android:backgroundTint="#D32F2F"
-                    android:textColor="#FFFFFF"
-                    android:layout_gravity="end"
-                    android:layout_marginBottom="4dp"/>
+                    android:orientation="horizontal"
+                    android:gravity="end"
+                    android:layout_marginBottom="4dp">
+
+                    <Button
+                        android:id="@+id/exportButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Export Recipe"
+                        android:backgroundTint="#1976D2"
+                        android:textColor="#FFFFFF"
+                        android:layout_marginEnd="8dp"/>
+
+                    <Button
+                        android:id="@+id/deleteButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Delete Recipe"
+                        android:backgroundTint="#D32F2F"
+                        android:textColor="#FFFFFF"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 

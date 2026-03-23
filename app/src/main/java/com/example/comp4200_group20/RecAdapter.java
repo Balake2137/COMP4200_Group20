@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,9 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
@@ -110,6 +114,42 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
                 }
             }
         });
+
+        // Export button click
+        holder.exportButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Cursor cursor = dbHelper.getDataFromTitle(data.getTitle());
+                if (cursor == null || !cursor.moveToFirst()) {
+                    Toast.makeText(context, "Could not load recipe data.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                String title       = cursor.getString(cursor.getColumnIndexOrThrow("title"));
+                String description = cursor.getString(cursor.getColumnIndexOrThrow("description"));
+                String ingredients = cursor.getString(cursor.getColumnIndexOrThrow("ingredients"));
+                String instructions = cursor.getString(cursor.getColumnIndexOrThrow("instructions"));
+                cursor.close();
+
+                String content =
+                        "Recipe:\n" + title + "\n\n" +
+                                "Description:\n" + description + "\n\n" +
+                                "Ingredients:\n" + ingredients + "\n\n" +
+                                "Instructions:\n" + instructions + "\n";
+
+                // Save directly to the public Downloads folder
+                String safeTitle = title.replaceAll("[^a-zA-Z0-9_\\-]", "_");
+                File downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                File exportFile = new File(downloadsDir, safeTitle + ".txt");
+
+                try (FileWriter writer = new FileWriter(exportFile)) {
+                    writer.write(content);
+                    Toast.makeText(context, "Saved to Downloads: " + exportFile.getName(), Toast.LENGTH_LONG).show();
+                } catch (IOException e) {
+                    Toast.makeText(context, "Export failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     @Override
@@ -125,6 +165,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
         CardView cardView;
         View expandedSection;
         Button deleteButton;
+        Button exportButton;
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             titleText = itemView.findViewById(R.id.titleText);
@@ -134,6 +175,7 @@ public class RecAdapter extends RecyclerView.Adapter<RecAdapter.MyViewHolder> {
             ingredientsText = itemView.findViewById(R.id.ingredientsText);
             instructionsText = itemView.findViewById(R.id.instructionsText);
             deleteButton = itemView.findViewById(R.id.deleteButton);
+            exportButton = itemView.findViewById(R.id.exportButton);
         }
     }
 }
