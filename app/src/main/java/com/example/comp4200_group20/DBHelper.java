@@ -49,18 +49,21 @@ public class DBHelper extends SQLiteOpenHelper {
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
         Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM course WHERE title=?", new String[]{inputTitle});
         if(cursor.getCount()>0){
-            sqLiteDatabase.delete("course", "title = ?", new String[]{inputTitle});
+            sqLiteDatabase.delete("recipe", "title = ?", new String[]{inputTitle});
         }
         return cursor;
     }
+    */
 
-    public long editData(String inputTitle, String inputDescription){
+    public long editData(String oldTitle, String titleInput, String descriptionInput, String ingredientsInput, String instructionsInput){
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("description", inputDescription);
+        contentValues.put("title", titleInput);
+        contentValues.put("description", descriptionInput);
+        contentValues.put("ingredients", ingredientsInput);
+        contentValues.put("instructions", instructionsInput);
 
-        return sqLiteDatabase.update("course", contentValues, "title=?", new String[]{inputTitle} );
+        return sqLiteDatabase.update("recipe", contentValues, "title=?", new String[]{oldTitle} );
     }
-    */
 
 }

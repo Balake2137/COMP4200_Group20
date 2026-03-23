@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#C6D7D6">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="740dp"
+        android:layout_marginTop="100dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#E0F0EF"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/recipeTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:ems="10"
+                android:hint="Recipe Title"
+                android:inputType="text"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+                android:id="@+id/recipeDecription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:ems="10"
+                android:hint="Description"
+                android:inputType="text"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <EditText
+                android:id="@+id/recipeIngredients"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:layout_marginLeft="16dp"
+                android:ems="10"
+                android:gravity="start|top"
+                android:hint="Ingredients"
+                android:inputType="textMultiLine" />
+
+            <EditText
+                android:id="@+id/recipeInstructions"
+                android:layout_width="match_parent"
+                android:layout_height="1000dp"
+                android:layout_marginLeft="16dp"
+                android:ems="10"
+                android:gravity="start|top"
+                android:hint="Instructions"
+                android:inputType="textMultiLine" />
+        </LinearLayout>
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/addEditHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="36dp"
+        android:fontFamily="sans-serif-black"
+        android:text="Add/Edit Recipe"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/addEditButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="#70C3BA"
+        android:text="Placeholder"
+        android:textColor="#5A6261"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
